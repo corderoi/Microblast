@@ -18,7 +18,7 @@ class Antibody
         self.positionY = positionY
         self.wCell = wCell
         self.direction = direction
-        speed = 50
+        speed = 25
         self.priority = priority
     }
     

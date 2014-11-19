@@ -27,9 +27,9 @@ func absolute(number: Int) -> Int
     return number < 0 ? -number : number
 }
 
-func renderCoordinates(x: Int, y: Int) -> (Int, Int)
+func renderCoordinates(x: Int, y: Int, deviceWidth: Int = 375, deviceHeight: Int = 667) -> (Int, Int)
 {
-    return (x * 375 / 900, y * 667 / 1600)
+    return (x * deviceWidth / 900, y * deviceHeight / 1600)
 }
 
 // pointForLayout()

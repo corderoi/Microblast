@@ -8,6 +8,8 @@
 
 import UIKit
 import SpriteKit
+import AVFoundation
+import CoreMotion
 
 class GameViewController: UIViewController, GameDelegate {
     var scene: GameScene!
@@ -16,9 +18,11 @@ class GameViewController: UIViewController, GameDelegate {
     var touchDown: NSDate? = nil
     var touchDuration = 0
     var previewViewLabelText = ["", "", "", ""]
+    let motionManager: CMMotionManager = CMMotionManager()
     
     var previewTicks = 0
-
+    var time = 0.0
+    
     @IBOutlet weak var previewView: UIView!
     @IBOutlet weak var previewViewLabel1: UILabel!
     @IBOutlet weak var previewViewLabel2: UILabel!
@@ -33,15 +37,21 @@ class GameViewController: UIViewController, GameDelegate {
     
     @IBOutlet weak var specialNameDisplay: UILabel!
     
+    var backgroundMusicPlayer: AVAudioPlayer!
+    
     override func viewDidLoad()
     {
         super.viewDidLoad()
+        
+        motionManager.startAccelerometerUpdates()
         
         createGame()
         
         startTitleScreen()
         
         // Start preview scene
+        
+        playBackgroundMusic()
         
         startPreviewScreen()
     }
@@ -102,6 +112,8 @@ class GameViewController: UIViewController, GameDelegate {
         scene.scaleMode = .ResizeFill
         scene.tick = didTick
         scene.frameTick = didFrameTick
+        scene.startMusic = playBackgroundMusic
+        scene.stopMusic = stopBackgroundMusic
         scene.startTicking()
         scene.collisionHappened = game.field.resultOfCollision
         
@@ -157,6 +169,26 @@ class GameViewController: UIViewController, GameDelegate {
         } else {
             touchDown = NSDate()
             
+            let touch = touches.anyObject() as UITouch
+            let touchLocation = touch.locationInNode(scene)
+            
+            if touchLocation.x > view.bounds.size.width - PauseButtonSize.width && touchLocation.y > view.bounds.size.height - PauseButtonSize.height {
+                // DEBUG
+                //println("PAUSE")
+                touchDown = nil
+                if !scene.paused {
+                    statusBarView.alpha = 0.3
+                    scene.pauseScene()
+                    scene.stopTicking()
+                    backgroundMusicPlayer.volume = 0.5
+                } else {
+                    backgroundMusicPlayer.volume = 1.0
+                    scene.unpauseScene()
+                    statusBarView.alpha = 0.75
+                    scene.startTicking()
+                }
+            }
+            
             /*if lastTick == nil {
             return
             }
@@ -177,10 +209,8 @@ class GameViewController: UIViewController, GameDelegate {
         if !game.hasStarted {
             
         } else {
-            let myTouchDuration = touchDuration
-            touchDuration = 0
-            game.charge = 0
-            chargeDidUpdate(game)
+            /*let touch = touches.anyObject() as UITouch
+            let touchLocation = touch.locationInNode(scene)*/
             
             if touchDown == nil {
                 return
@@ -188,30 +218,113 @@ class GameViewController: UIViewController, GameDelegate {
             
             touchDown = nil
             
-            let touch = touches.anyObject() as UITouch
-            let touchLocation = touch.locationInNode(scene)
+            let myTouchDuration = touchDuration
+            touchDuration = 0
+            game.charge = 0
+            chargeDidUpdate(game)
             
             if myTouchDuration >= PowerThreshold {
                 // DEBUG
                 //println("\(myTouchDuration) time passed: power shot!")
                 
-                if game.field.player.hasSpecial() {
-                    game.field.player.trySpecial(touchLocation)
-                    game.energy = [Energy]()
-                    energyDidUpdate(game)
-                    return
+                if let player = game.field.player {
+                    if player.hasSpecial() {
+                        player.trySpecial(/*touchLocation*/)
+                        game.energy = [Energy]()
+                        energyDidUpdate(game)
+                        return
+                    }
                 }
             }
             
             // DEBUG
             //println("Touch location \(touchLocation)")
             
-            game.field.player.tryShoot(touchLocation)
+            if let player = game.field.player {
+                player.tryShoot(/*touchLocation*/)
+            }
         }
     }
     
     override func prefersStatusBarHidden() -> Bool {
         return true
+    }
+    
+    func didFrameTick()
+    {
+        if !acceptUserInput {
+            return
+        }
+        
+        if !game.hasStarted {
+            return
+        }
+        
+        game.field.moveProjectiles()
+        
+        // Move player
+        if let player = game.field.player {
+            if let data = motionManager.accelerometerData {
+                // DEBUG
+                //println("Accelerometer data working!\nfabs(data.acceleration.x): \(fabs(data.acceleration.x))")
+                
+                //let scalar = 5
+                
+                player.move(data.acceleration.x)
+                
+                //if fabs(data.acceleration.x) > 2.0 {
+                /*if fabs(data.acceleration.x) > 0.1 {
+                    player.positionX += data.acceleration.x > 0.0 ? Int(data.acceleration.x + 0.5) * scalar : Int(data.acceleration.x - 0.5)
+                    if data.acceleration.x > 0.0 {
+                        player.velocity += 1
+                    } else if data.acceleration.x < 0.0 {
+                        player.velocity -= 1
+                    }
+                } else {
+                    /*if player.positionX < fieldDimensions.0 / 2 {
+                        player.positionX += 1
+                    } else if player.positionX > fieldDimensions.0 / 2 {
+                        player.positionX -= 1
+                    }*/
+                    if player.velocity > 0 {
+                        player.velocity -= 1
+                    } else if player.velocity < 0 {
+                        player.velocity += 1
+                    }
+                    //player.velocity += player.velocity > 0 ? -1 : 1
+                }*/
+                //player.move(0)//Int(data.acceleration.x * 5.0))
+                //} else {
+                //    player.move(0)
+                
+                // DEBUG
+                //println(":(")
+                //}
+            } else {
+                //let moveAmount = Int(sin(Double(time++) / 10.0) * 2.0)
+                
+                let sampleData = sin(time++ / 10.0) / 2.0
+                player.move(sampleData)
+                
+                // DEBUG
+                //println(sampleData)
+                
+                // DEBUG
+                //println("Moving \(moveAmount)")
+                
+                //player.move(moveAmount)*/
+            }
+        }
+        
+        // Charge power
+        if touchDown != nil {
+            touchDuration++
+            game.charge++
+            chargeDidUpdate(game)
+            
+            // DEBUG
+            //println("Touched for \(touchDuration) frame ticks")
+        }
     }
     
     func didTick()
@@ -227,37 +340,10 @@ class GameViewController: UIViewController, GameDelegate {
         } else {
             // DEBUG
             //println("Tick...")
+            
             game.field.moveViruses()
             game.field.tryVirusAttack()
             game.checkIfLevelIsOver()
-        }
-    }
-    
-    func didFrameTick()
-    {
-        // DEBUG
-        //println("didFrameTick()")
-        
-        if !game.hasStarted {
-            // DEBUG
-            println("!!!!!!!!!!!game.hasStarted")
-            
-            return
-            
-            // DEBUG
-            //println(PreviewText)
-            //println(previewTicks)
-            
-            //previewTicks++
-        } else {
-            game.field.moveProjectiles()
-            if touchDown != nil {
-                touchDuration++
-                game.charge++
-                chargeDidUpdate(game)
-                // DEBUG
-                //println("Touched for \(touchDuration) frame ticks")
-            }
         }
     }
     
@@ -269,6 +355,18 @@ class GameViewController: UIViewController, GameDelegate {
     func playerDidAppear(game: Game, player: WhiteBloodCell)
     {
         scene.addPlayer(game, player: player)
+    }
+    
+    func playerDidMove(game: Game, player: WhiteBloodCell)
+    {
+        scene.redrawPlayer(game, player: player)
+    }
+    
+    func playerDidDie(game: Game)
+    {
+        scene.stopSpacedTicks()
+        scene.removePlayer()
+        game.field.removePlayer()
     }
     
     func antibodyDidAppear(game: Game, antibody: Antibody)
@@ -318,41 +416,25 @@ class GameViewController: UIViewController, GameDelegate {
     {
         scene.removeVirus(game, whichVirus: whichVirus)
         
+        // (Number of viruses left, index to access in [SpeedConfig])
+        let stageProgression = [
+            (1, 4), (2, 3), (game.field.startingCount / 4, 2), (game.field.startingCount / 2, 1)
+        ]
+        
         if game.field.viruses.count == 0 {
             playerKilledAllViruses(game)
+            game.stage = 0
             //levelDidEnd(game, game.goToNextLevel)
-        } else if game.field.viruses.count <= 1 {
-            // DEBUG
-            //println("Speedy 5!")
-            
-            scene.tickLengthMillis = SpeedConfig[4].tickLength
-            scene.virusMoveDuration = SpeedConfig[4].moveDuration
-            game.field.step = SpeedConfig[4].step
-            game.field.virusAnimationSpeed = SpeedConfig[4].virusAnimationSpeed
-        } else if game.field.viruses.count <= 2 {
-            // DEBUG
-            //println("Speedy 4!")
-            
-            scene.tickLengthMillis = SpeedConfig[3].tickLength
-            scene.virusMoveDuration = SpeedConfig[3].moveDuration
-            game.field.step = SpeedConfig[3].step
-            game.field.virusAnimationSpeed = SpeedConfig[3].virusAnimationSpeed
-        } else if game.field.viruses.count <= game.field.startingCount / 4 {
-            // DEBUG
-            //println("Speedy 3!")
-            
-            scene.tickLengthMillis = SpeedConfig[2].tickLength
-            scene.virusMoveDuration = SpeedConfig[2].moveDuration
-            game.field.step = SpeedConfig[2].step
-            game.field.virusAnimationSpeed = SpeedConfig[2].virusAnimationSpeed
-        } else if game.field.viruses.count <= game.field.startingCount / 2 {
-            // DEBUG
-            //println("Speedy 2!")
-            
-            scene.tickLengthMillis = SpeedConfig[1].tickLength
-            scene.virusMoveDuration = SpeedConfig[1].moveDuration
-            game.field.step = SpeedConfig[1].step
-            game.field.virusAnimationSpeed = SpeedConfig[4].virusAnimationSpeed
+        } else {
+            for (limit, stage) in stageProgression {
+                if game.field.viruses.count == limit {
+                    scene.tickLengthMillis = SpeedConfig[stage].tickLength
+                    scene.virusMoveDuration = SpeedConfig[stage].moveDuration
+                    game.field.step = SpeedConfig[stage].step
+                    game.field.virusAnimationSpeed = SpeedConfig[stage].virusAnimationSpeed
+                    break
+                }
+            }
         }
     }
     
@@ -424,5 +506,33 @@ class GameViewController: UIViewController, GameDelegate {
     
     func chargeDidUpdate(game: Game) {
         scene.redrawCharge(game)
+    }
+    
+    func playBackgroundMusic() {
+        let filename = "theme.mp3"
+        
+        let url = NSBundle.mainBundle().URLForResource(
+            filename, withExtension: nil)
+        if (url == nil) {
+            println("Could not find file: \(filename)")
+            return
+        }
+        
+        var error: NSError? = nil
+        backgroundMusicPlayer =
+            AVAudioPlayer(contentsOfURL: url, error: &error)
+        if backgroundMusicPlayer == nil {
+            println("Could not create audio player: \(error!)")
+            return
+        }
+        
+        backgroundMusicPlayer.numberOfLoops = -1
+        backgroundMusicPlayer.prepareToPlay()
+        backgroundMusicPlayer.play()
+    }
+    
+    func stopBackgroundMusic()
+    {
+        backgroundMusicPlayer = nil
     }
 }

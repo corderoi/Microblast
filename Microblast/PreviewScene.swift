@@ -31,6 +31,9 @@ class PreviewScene: SKScene
         executeThisWhenDone = callback
     }
     
+    override func didMoveToView(view: SKView) {
+    }
+    
     override func update(currentTime: NSTimeInterval)
     {
         // Update preview text

@@ -23,11 +23,14 @@ class Game
         charge = 0
         hasStarted = false
         field = Field(game: self)
+        
+        // DEBUG
+        //println(numLevels)
     }
     
     func start()
     {
-        delegate?.playerDidAppear(self, player: field.player)
+        delegate?.playerDidAppear(self, player: field.player!)
         field.addViruses()
         delegate?.levelDidBegin(self)
         hasStarted = true
@@ -40,9 +43,10 @@ class Game
         }
     }
     
-    func goToNextLevel() -> ()
+    func goToNextLevel()
     {
         if (++level < numLevels) {
+            stage = 0
             score += LevelClearScore
             delegate?.scoreDidUpdate(self)
             delegate?.levelDidUpdate(self)

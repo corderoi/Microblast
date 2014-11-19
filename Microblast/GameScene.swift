@@ -7,7 +7,7 @@
 //
 
 import SpriteKit
-import AVFoundation
+import Foundation
 
 // GameScene /////////////////////////////////////////////////////////////////
 
@@ -19,23 +19,25 @@ class GameScene : SKScene, SKPhysicsContactDelegate
     var frameTick: (() -> ())?
     var collisionHappened: (() -> ())?
     
+    var startMusic: (() -> ())?
+    var stopMusic: (() -> ())?
+    
     var lastTick: NSDate?
     var tickLengthMillis: NSTimeInterval!
     
     var previewNode: SKSpriteNode?
+    var pauseOverlay: SKSpriteNode!
     
-    var playerNode: SKSpriteNode?
     var virusNodes: [SKSpriteNode]!
     var antibodyNodes: [SKSpriteNode]!
     var antigenNodes: [SKSpriteNode]!
     var energyNodes: [SKSpriteNode]!
     var chargeNode: SKSpriteNode?
+    var lNode: SKSpriteNode!
     
     var spacedTicksEnabled: Bool = false
     
     var virusMoveDuration: NSTimeInterval!
-    
-    var backgroundMusicPlayer: AVAudioPlayer!
     
     required init(coder aDecoder: NSCoder) {
         fatalError("NSCoder not supported")
@@ -52,8 +54,10 @@ class GameScene : SKScene, SKPhysicsContactDelegate
         antibodyNodes = [SKSpriteNode]()
         antigenNodes = [SKSpriteNode]()
         energyNodes = [SKSpriteNode]()
+        lNode = SKSpriteNode()
         chargeNode = nil
         lastTick = nil
+        pauseOverlay = SKSpriteNode()
         
         virusMoveDuration = SpeedConfig[0].moveDuration
         tickLengthMillis = SpeedConfig[0].tickLength
@@ -94,8 +98,6 @@ class GameScene : SKScene, SKPhysicsContactDelegate
         bgNode.position = CGPoint(x: size.width / 2, y: size.height / 2)
         bgNode.zPosition = -999
         addChild(bgNode)
-        
-        playBackgroundMusic()
     }
     
     func endCampaign()
@@ -136,6 +138,22 @@ class GameScene : SKScene, SKPhysicsContactDelegate
         lastTick = nil
     }
     
+    func pauseScene()
+    {
+        pauseOverlay = SKSpriteNode(color: SKColor.blackColor(), size: size)
+        pauseOverlay.alpha = 0.5
+        pauseOverlay.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        pauseOverlay.zPosition = 899
+        addChild(pauseOverlay)
+        paused = true
+    }
+    
+    func unpauseScene()
+    {
+        pauseOverlay.removeFromParent()
+        paused = false
+    }
+    
     func startSpacedTicks() {
         spacedTicksEnabled = true
     }
@@ -153,9 +171,10 @@ class GameScene : SKScene, SKPhysicsContactDelegate
     
     func addPlayer(game: Game, player: WhiteBloodCell)
     {
-        let renderCoords = renderCoordinates(player.positionX, player.positionY)
+        let renderCoords = renderCoordinates(player.positionX, player.positionY, deviceWidth: Int(size.width), deviceHeight: Int(size.height))
         wCellNode.position = CGPoint(x: renderCoords.0, y: renderCoords.1)
         wCellNode.size = PlayerSize
+        wCellNode.zRotation = 0.0
         
         bestowPhysics(wCellNode, radius: PlayerSize.width / 2, category: PhysicsCategory.WCell, contact: PhysicsCategory.Antigen | PhysicsCategory.Virus)
         
@@ -164,6 +183,34 @@ class GameScene : SKScene, SKPhysicsContactDelegate
         
         wCellNode.zPosition = 100
         addChild(wCellNode)
+        
+        /*lNode = SKSpriteNode(imageNamed: "line")
+        lNode.position = wCellNode.position
+        lNode.zPosition = wCellNode.zPosition + 1
+        lNode.zRotation = wCellNode.zRotation
+        lNode.anchorPoint = CGPoint(x: 0.5, y: 0.0)
+        lNode.alpha = 0.25
+        
+        addChild(lNode)*/
+    }
+    
+    func redrawPlayer(game: Game, player: WhiteBloodCell)
+    {
+        let playerNode = wCellNode
+
+        let renderCoords = renderCoordinates(player.positionX, player.positionY, deviceWidth: Int(size.width), deviceHeight: Int(size.height))
+        playerNode.position = CGPoint(x: renderCoords.0, y: renderCoords.1)
+        //lNode.position = playerNode.position
+        
+        let angle = Double(atan(player.angle.y / player.angle.x)) + M_PI_2
+        let correctedAngle = player.angle.x >= 0 ? angle + M_PI : angle
+        playerNode.zRotation = CGFloat(correctedAngle)
+        //lNode.zRotation = playerNode.zRotation
+    }
+    
+    func removePlayer()
+    {
+        wCellNode.removeFromParent()
     }
     
     func addAntibody(antibody: Antibody) {
@@ -174,13 +221,13 @@ class GameScene : SKScene, SKPhysicsContactDelegate
         
         antibodyNode.position = wCellNode.position
         
-        var fixIt = M_PI_2
+        let angle = Double(atan(antibody.direction.y / antibody.direction.x)) + M_PI_2
+        let correctedAngle = antibody.direction.x >= 0 ? angle + M_PI : angle
+        /*if antibody.direction.x >= 0 {
+            angle = M_PI_2 * 3
+        }*/
         
-        if antibody.direction.x > 0 {
-            fixIt = M_PI_2 * 3
-        }
-        
-        antibodyNode.zRotation = CGFloat(Double(atan(antibody.direction.y / antibody.direction.x)) + fixIt)
+        antibodyNode.zRotation = CGFloat(correctedAngle)
         
         bestowPhysics(antibodyNode, radius: antibodyNode.size.width / 2, category: PhysicsCategory.Antibody, contact: PhysicsCategory.Virus | PhysicsCategory.Antigen | PhysicsCategory.OuterBound, precise: true)
         
@@ -206,15 +253,17 @@ class GameScene : SKScene, SKPhysicsContactDelegate
     }
     
     func redrawAntibodies(game: Game) {
-        for i in 0 ..< game.field.player.antibodies.count {
-            if let antibody = game.field.player?.antibodies[i] {
-                let gameCoords = (antibody.positionX, antibody.positionY)
-                let renderCoords = renderCoordinates(gameCoords.0, gameCoords.1)
-                let destination = CGPoint(x: renderCoords.0, y: renderCoords.1)
-                antibodyNodes[i].position = destination
-                // DEBUG
-                //let actionMove = SKAction.moveTo(destination, duration: 0.05)
-                //antibodyNodes[i].runAction(SKAction.sequence([actionMove]))
+        if let player = game.field.player {
+            for i in 0 ..< player.antibodies.count {
+                if let antibody = game.field.player?.antibodies[i] {
+                    let gameCoords = (antibody.positionX, antibody.positionY)
+                    let renderCoords = renderCoordinates(gameCoords.0, gameCoords.1, deviceWidth: Int(size.width), deviceHeight: Int(size.height))
+                    let destination = CGPoint(x: renderCoords.0, y: renderCoords.1)
+                    antibodyNodes[i].position = destination
+                    // DEBUG
+                    //let actionMove = SKAction.moveTo(destination, duration: 0.05)
+                    //antibodyNodes[i].runAction(SKAction.sequence([actionMove]))
+                }
             }
         }
     }
@@ -251,7 +300,7 @@ class GameScene : SKScene, SKPhysicsContactDelegate
         virusNode.size = CGSize(width: 1, height: 1)
         
         let startXY = CGPoint(x: size.width / 2, y: size.height / 2)
-        let renderCoords = renderCoordinates(virus.positionX, virus.positionY)
+        let renderCoords = renderCoordinates(virus.positionX, virus.positionY, deviceWidth: Int(size.width), deviceHeight: Int(size.height))
         let renderXY = CGPoint(x: renderCoords.0, y: renderCoords.1)
         
         virusNode.position = startXY
@@ -261,7 +310,9 @@ class GameScene : SKScene, SKPhysicsContactDelegate
         
         bestowPhysics(virusNode, radius: VirusSize.width / 2, category: PhysicsCategory.Virus, contact: PhysicsCategory.Antibody | PhysicsCategory.WCell)
         
-        configureAnimationLoop(virusNode, virus.animationScheme, virus.name, game.field.virusAnimationSpeed)
+        if virus.animationScheme != [1] {
+            configureAnimationLoop(virusNode, virus.animationScheme, virus.name, game.field.virusAnimationSpeed)
+        }
         
         let zoomAction = SKAction.group([SKAction.scaleTo(VirusSize.width, duration: 0.59), SKAction.moveTo(renderXY , duration: 0.59)])
         
@@ -285,11 +336,12 @@ class GameScene : SKScene, SKPhysicsContactDelegate
         for i in 0 ..< virusNodes.count {
             if let virus = game.field.viruses[i] {
                 let gameCoords = (virus.positionX, virus.positionY)
-                let renderCoords = renderCoordinates(gameCoords.0, gameCoords.1)
+                let renderCoords = renderCoordinates(gameCoords.0, gameCoords.1, deviceWidth: Int(size.width), deviceHeight: Int(size.height))
                 let destination = CGPoint(x: renderCoords.0, y: renderCoords.1)
-                let duration = descended ? virusMoveDuration * 1000 : virusMoveDuration
+                /*let duration = descended ? virusMoveDuration * 1000 : virusMoveDuration
                 let actionMove = SKAction.moveTo(destination, duration: NSTimeInterval(virusMoveDuration))
-                virusNodes[i].runAction(SKAction.sequence([actionMove]))
+                virusNodes[i].runAction(SKAction.sequence([actionMove]))*/
+                virusNodes[i].position = destination
             }
         }
     }
@@ -321,7 +373,7 @@ class GameScene : SKScene, SKPhysicsContactDelegate
     {
         let antigenNode = SKSpriteNode(imageNamed: antigen.name)
         
-        let renderPosition = renderCoordinates(virus.positionX, virus.positionY)
+        let renderPosition = renderCoordinates(virus.positionX, virus.positionY, deviceWidth: Int(size.width), deviceHeight: Int(size.height))
         antigenNode.position = CGPoint(x: renderPosition.0, y: renderPosition.1)
         
         bestowPhysics(antigenNode, radius: CGFloat(antigenDimensions.0 / 2), category: PhysicsCategory.Antigen, contact: PhysicsCategory.WCell & PhysicsCategory.Antibody | PhysicsCategory.Shield | PhysicsCategory.Ground | PhysicsCategory.OuterBound, precise: true)
@@ -349,7 +401,7 @@ class GameScene : SKScene, SKPhysicsContactDelegate
         for i in 0 ..< game.field.antigens.count {
             if let antigen = game.field.antigens[i] {
                 let gameCoords = (antigen.positionX, antigen.positionY)
-                let renderCoords = renderCoordinates(gameCoords.0, gameCoords.1)
+                let renderCoords = renderCoordinates(gameCoords.0, gameCoords.1, deviceWidth: Int(size.width), deviceHeight: Int(size.height))
                 let destination = CGPoint(x: renderCoords.0, y: renderCoords.1)
                 antigenNodes[i].position = destination
                 /*let actionMove = SKAction.moveTo(destination, duration: 0.05)
@@ -507,7 +559,7 @@ class GameScene : SKScene, SKPhysicsContactDelegate
     
     func endOfLevel(game: Game)
     {
-        stopBackgroundMusic()
+        stopMusic?()
     }
     
     func levelTransition(game: Game, transition: (() -> ()))
@@ -529,7 +581,7 @@ class GameScene : SKScene, SKPhysicsContactDelegate
             // DEBUG
             //println("Wham!")
             
-            playBackgroundMusic()
+            startMusic?()
             transition()
         }
         
@@ -557,32 +609,6 @@ class GameScene : SKScene, SKPhysicsContactDelegate
             (secondBody.categoryBitMask & PhysicsCategory.Antibody != 0)) {
                 antibodyDidCollideWithVirus(firstBody.node as SKSpriteNode, virus: secondBody.node as SKSpriteNode)
         }*/
-    }
-    
-    func playBackgroundMusic(filename: String = "theme.mp3") {
-        let url = NSBundle.mainBundle().URLForResource(
-            filename, withExtension: nil)
-        if (url == nil) {
-            println("Could not find file: \(filename)")
-            return
-        }
-        
-        var error: NSError? = nil
-        backgroundMusicPlayer =
-            AVAudioPlayer(contentsOfURL: url, error: &error)
-        if backgroundMusicPlayer == nil {
-            println("Could not create audio player: \(error!)")
-            return
-        }
-        
-        backgroundMusicPlayer.numberOfLoops = -1
-        backgroundMusicPlayer.prepareToPlay()
-        backgroundMusicPlayer.play()
-    }
-    
-    func stopBackgroundMusic()
-    {
-        backgroundMusicPlayer = nil
     }
     
     func redrawEnergy(game: Game)
@@ -625,7 +651,7 @@ class GameScene : SKScene, SKPhysicsContactDelegate
     
     func redrawCharge(game: Game)
     {
-        if let myChargeNode = chargeNode {
+        /*if let myChargeNode = chargeNode {
             myChargeNode.removeFromParent()
             chargeNode = nil
         }
@@ -641,6 +667,6 @@ class GameScene : SKScene, SKPhysicsContactDelegate
         chargeNode!.anchorPoint = CGPoint(x: 0.0, y: 0.0)
         chargeNode!.alpha = CGFloat(0.25 + chargeScalar / 2.0)
         chargeNode!.size = CGSize(width: Int(180.0 * chargeScalar), height: 4)
-        addChild(chargeNode!)
+        addChild(chargeNode!)*/
     }
 }

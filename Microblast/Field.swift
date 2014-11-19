@@ -24,7 +24,17 @@ class Field
         descendingDown = 0
         virusAnimationSpeed = SpeedConfig[0].virusAnimationSpeed
         antigens = [Antigen?]()
+        addPlayer()
+    }
+    
+    func addPlayer()
+    {
         player = WhiteBloodCell(field: self)
+    }
+    
+    func removePlayer()
+    {
+        player = nil
     }
     
     func addViruses()
@@ -64,8 +74,28 @@ class Field
                 viruses.append(newVirus)
                 startingCount++
                 game.delegate?.virusDidAppear(game, virus: newVirus, afterTransition: newVirus.setZPlaneMain)
+            case 5:
+                let newVirus = Virus(positionX: Int(coordinates.x), positionY: Int(coordinates.y), name: "chicken", id: i, field: self, animationScheme: [1])
+                viruses.append(newVirus)
+                startingCount++
+                game.delegate?.virusDidAppear(game, virus: newVirus, afterTransition: newVirus.setZPlaneMain)
+            case 6:
+                let newVirus = Virus(positionX: Int(coordinates.x), positionY: Int(coordinates.y), name: "mikewazaski", id: i, field: self, animationScheme: [1])
+                viruses.append(newVirus)
+                startingCount++
+                game.delegate?.virusDidAppear(game, virus: newVirus, afterTransition: newVirus.setZPlaneMain)
             case 7:
                 let newVirus = Virus(positionX: Int(coordinates.x), positionY: Int(coordinates.y), name: "amoeba", id: i, field: self, animationScheme: [1, 2, 3, 4, 3, 2, 1, 5, 6, 7, 6, 5])
+                viruses.append(newVirus)
+                startingCount++
+                game.delegate?.virusDidAppear(game, virus: newVirus, afterTransition: newVirus.setZPlaneMain)
+            case 8:
+                let newVirus = Virus(positionX: Int(coordinates.x), positionY: Int(coordinates.y), name: "meh", id: i, field: self, animationScheme: [1])
+                viruses.append(newVirus)
+                startingCount++
+                game.delegate?.virusDidAppear(game, virus: newVirus, afterTransition: newVirus.setZPlaneMain)
+            case 9:
+                let newVirus = Virus(positionX: Int(coordinates.x), positionY: Int(coordinates.y), name: "theabyss", id: i, field: self, animationScheme: [1])
                 viruses.append(newVirus)
                 startingCount++
                 game.delegate?.virusDidAppear(game, virus: newVirus, afterTransition: newVirus.setZPlaneMain)
@@ -106,7 +136,7 @@ class Field
             if let virus = viruses[i] {
                 if (virus.positionX < virusDimensionsWithMargin.0 / 2 && forwardRight == false) || (virus.positionX > fieldDimensions.0 - virusDimensionsWithMargin.0 / 2 && forwardRight == true) {
                     //directionalSwitch = true
-                    descendingDown += 2
+                    descendingDown += 10
                     forwardRight = !forwardRight // !
                     game.delegate?.virusReachedEdgeOfField(game)
                     break
@@ -122,7 +152,7 @@ class Field
             // Step down
             for i in 0 ..< viruses.count {
                 if let virus = viruses[i] {
-                    virus.positionY -= step / 3
+                    virus.positionY -= VerticalStep
                 }
             }
             descendingDown--
@@ -131,7 +161,7 @@ class Field
             // Move to the side
             for i in 0 ..< viruses.count {
                 if let virus = viruses[i] {
-                    virus.positionX += step / 4 * directionScalar
+                    virus.positionX += step * directionScalar
                 }
             }
             game.delegate?.virusesDidMove(game)
@@ -150,7 +180,7 @@ class Field
         
         if antigens.count <= numCols {
             for virus in viruses {
-                if random(100) < 5 {
+                if random(1000) < SpeedConfig[game.stage].virusAttackChance {
                     virus?.tryShoot()
                 }
             }
@@ -165,102 +195,104 @@ class Field
         var antigenHitList = [Int]()
         var playerHit = false
         
-        // Check for collisions or antigens that landed
-        for i in 0 ..< antigens.count {
-            if let antigen = antigens[i] {
-                // Antigen out of screen
-                if antigen.positionX < 0 + InnerMargin || antigen.positionY < 0 || antigen.positionY > fieldDimensions.1 {
-                    antigenHitList.append(i)
-                }
-                // Antigen hit player
-                if absolute(antigen.positionX - player.positionX) < Int(PlayerSize.width) / 2 && absolute(antigen.positionY - player.positionY) < Int(PlayerSize.height) / 2 {
-                    antigenHitList.append(i)
-                    playerHit = true
+        if let player = player {
+            // Check for collisions or antigens that landed
+            for i in 0 ..< antigens.count {
+                if let antigen = antigens[i] {
+                    // Antigen out of screen
+                    if antigen.positionX < 0 + InnerMargin || antigen.positionY < 0 || antigen.positionY > fieldDimensions.1 {
+                        antigenHitList.append(i)
+                    }
+                    // Antigen hit player
+                    if absolute(antigen.positionX - player.positionX) < Int(PlayerSize.width) / 2 && absolute(antigen.positionY - player.positionY) < Int(PlayerSize.height) / 2 {
+                        antigenHitList.append(i)
+                        playerHit = true
+                    }
                 }
             }
-        }
-        
-        // Check for collisions or out-of-screen antibodies
-        for i in 0 ..< player.antibodies.count {
-            if let antibody = player.antibodies[i] {
-                // Antibody out of screen
-                if antibody.positionX < 0 - OuterMargin || antibody.positionX > fieldDimensions.0 + OuterMargin
-                    || antibody.positionY < 0 - OuterMargin || antibody.positionY > fieldDimensions.1 + OuterMargin {
-                        antibodyHitList.append(i)
-                }
-                for j in 0 ..< viruses.count {
-                    if let virus = viruses[j] {
-                        if virus.zPlane == 0 {
-                            // Antibody in contact with virus
-                            if absolute(antibody.positionX - virus.positionX) < virusDimensions.0 / 2 && absolute(antibody.positionY - virus.positionY) < virusDimensions.1 / 2 {
-                                if antibody.priority <= 3 {
+            
+            // Check for collisions or out-of-screen antibodies
+            for i in 0 ..< player.antibodies.count {
+                if let antibody = player.antibodies[i] {
+                    // Antibody out of screen
+                    if antibody.positionX < 0 - OuterMargin || antibody.positionX > fieldDimensions.0 + OuterMargin
+                        || antibody.positionY < 0 - OuterMargin || antibody.positionY > fieldDimensions.1 + OuterMargin {
+                            antibodyHitList.append(i)
+                    }
+                    for j in 0 ..< viruses.count {
+                        if let virus = viruses[j] {
+                            if virus.zPlane == 0 {
+                                // Antibody in contact with virus
+                                if absolute(antibody.positionX - virus.positionX) < virusDimensions.0 * 2 / 3 && absolute(antibody.positionY - virus.positionY) < virusDimensions.1 * 2 / 3 {
+                                    if antibody.priority <= 3 {
+                                        antibodyHitList.append(i)
+                                    }
+                                    virusHitList.append(j)
+                                    break
+                                }
+                            }
+                        }
+                    }
+                    for j in 0 ..< antigens.count {
+                        if let antigen = antigens[j] {
+                            // Antibody vs. antigen
+                            if absolute(antibody.positionX - antigen.positionX) < AntibodyDimensions.0 / 2 && absolute(antibody.positionY - antigen.positionY) < AntibodyDimensions.1 / 2 {
+                                if antigen.priority < antibody.priority {
+                                    antigenHitList.append(j)
+                                } else if antigen.priority == antibody.priority {
+                                    antigenHitList.append(j)
+                                    antibodyHitList.append(i)
+                                } else {
                                     antibodyHitList.append(i)
                                 }
-                                virusHitList.append(j)
                                 break
                             }
                         }
                     }
                 }
-                for j in 0 ..< antigens.count {
-                    if let antigen = antigens[j] {
-                        // Antibody vs. antigen
-                        if absolute(antibody.positionX - antigen.positionX) < AntibodyDimensions.0 / 2 && absolute(antibody.positionY - antigen.positionY) < AntibodyDimensions.1 / 2 {
-                            if antigen.priority < antibody.priority {
-                                antigenHitList.append(j)
-                            } else if antigen.priority == antibody.priority {
-                                antigenHitList.append(j)
-                                antibodyHitList.append(i)
-                            } else {
-                                antibodyHitList.append(i)
-                            }
-                            break
-                        }
-                    }
-                }
             }
-        }
-        
-        var offset = 0
-        for i in antibodyHitList {
-            if contains(antibodyBlacklist, i) {
-                continue
-            } else {
-                player.antibodies[i - offset]?.die()
-                player.antibodies.removeAtIndex(i - offset)
-                game.delegate?.antibodyDidDie(i - offset)
-                antibodyBlacklist.append(i)
-                offset++
-            }
-        }
-        offset = 0
-        for i in antigenHitList {
-            antigens.removeAtIndex(i - offset)
-            game.delegate?.antigenDidDie(i, whichAntigen: i - offset)
-            offset++
-        }
-        offset = 0
-        for i in virusHitList {
-            if let virus = game.field.viruses[i - offset] {
-                virus.wasHit()
-                if virus.isDead() {
-                    game.score += virus.score
-                    game.addEnergy(virus.getEnergy())
-                    game.delegate?.scoreDidUpdate(game)
-                    killVirus(i - offset)
-                    game.delegate?.virusDidDie(game, whichVirus: i - offset)
+            
+            var offset = 0
+            for i in antibodyHitList {
+                if contains(antibodyBlacklist, i) {
+                    continue
+                } else {
+                    player.antibodies[i - offset]?.die()
+                    player.antibodies.removeAtIndex(i - offset)
+                    game.delegate?.antibodyDidDie(i - offset)
+                    antibodyBlacklist.append(i)
                     offset++
                 }
             }
-        }
-        if playerHit {
-            player.wasHit()
-            if player.isDead() {
-                // DEBUG
-                println("You got destroyed!")
-                
-                // Temp restore
-                player.HP = 1
+            offset = 0
+            for i in antigenHitList {
+                antigens.removeAtIndex(i - offset)
+                game.delegate?.antigenDidDie(i, whichAntigen: i - offset)
+                offset++
+            }
+            offset = 0
+            for i in virusHitList {
+                if let virus = game.field.viruses[i - offset] {
+                    virus.wasHit()
+                    if virus.isDead() {
+                        game.score += virus.score
+                        game.addEnergy(virus.getEnergy())
+                        game.delegate?.scoreDidUpdate(game)
+                        killVirus(i - offset)
+                        game.delegate?.virusDidDie(game, whichVirus: i - offset)
+                        offset++
+                    }
+                }
+            }
+            if playerHit {
+                player.wasHit()
+                if player.isDead() {
+                    // DEBUG
+                    //println("You got destroyed!")
+                    
+                    // Temp restore
+                    //player.HP = 1
+                }
             }
         }
     }
@@ -281,17 +313,19 @@ class Field
         game.delegate?.antigensDidMove(game)
         
         // Antibodies
-        for i in 0 ..< player.antibodies.count {
-            if let antibody = player.antibodies[i] {
-                // DEBUG
-                //println("Direction \(antibody.direction)")
-                //println("Speed \(antibody.speed)")
-                
-                antibody.positionX += Int(Float(antibody.direction.x) * Float(antibody.speed))
-                antibody.positionY += Int(Float(antibody.direction.y) * Float(antibody.speed))
-                
-                // DEBUG
-                //println("Antibody (\(antibody.positionX), \(antibody.positionY))")
+        if let player = player {
+            for i in 0 ..< player.antibodies.count {
+                if let antibody = player.antibodies[i] {
+                    // DEBUG
+                    //println("Direction \(antibody.direction)")
+                    //println("Speed \(antibody.speed)")
+                    
+                    antibody.positionX += Int(Float(antibody.direction.x) * Float(antibody.speed))
+                    antibody.positionY += Int(Float(antibody.direction.y) * Float(antibody.speed))
+                    
+                    // DEBUG
+                    //println("Antibody (\(antibody.positionX), \(antibody.positionY))")
+                }
             }
         }
         
@@ -304,7 +338,7 @@ class Field
     var width: Int
     var height: Int
     var viruses: [Virus?]
-    var player: WhiteBloodCell!
+    var player: WhiteBloodCell?
     var game: Game!
     var forwardRight: Bool
     var descendingDown: Int

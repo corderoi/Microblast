@@ -11,19 +11,11 @@ import Foundation
 // GameDelegate
 
 protocol GameDelegate {
-    // Invoked when the current round of Swiftris ends
-    //func gameDidEnd(swiftris: Swiftris)
-    
-    // Invoked immediately after a new game has begun
-    //func gameDidBegin(swiftris: Swiftris)
-    
-    // Invoked when the falling shape has become part of the game board
-    //func gameShapeDidLand(swiftris: Swiftris)
-    
-    // Invoked when the falling shape has changed its location
-    //func gameShapeDidMove(swiftris: Swiftris)
-        
     func playerDidAppear(game: Game, player: WhiteBloodCell)
+    
+    func playerDidMove(game: Game, player: WhiteBloodCell)
+    
+    func playerDidDie(game: Game)
     
     func antibodyDidAppear(game: Game, antibody: Antibody)
     
@@ -64,10 +56,4 @@ protocol GameDelegate {
     func energyDidUpdate(game: Game)
     
     func gameDidEnd()
-    
-    // Invoked when the falling shape has changed its location after being dropped
-    //func gameShapeDidDrop(swiftris: Swiftris)
-    
-    // Invoked when the game has reached a new level
-    //func gameDidLevelUp(swiftris: Swiftris)
 }
