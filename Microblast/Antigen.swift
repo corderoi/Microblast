@@ -12,7 +12,7 @@ import Foundation
 
 class Antigen
 {
-    init(positionX: Int, positionY: Int, virus: Virus, speed: Int = 9, name: String = "pin", animationSequence: [Int] = [1], priority: Int = 1)
+    init(positionX: Int, positionY: Int, virus: Virus, speed: Int = 8, name: String = "pin", animationSequence: [Int] = [1], priority: Int = 1)
     {
         self.positionX = positionX
         self.positionY = positionY
@@ -40,7 +40,7 @@ class Snow: Antigen
 {
     init(positionX: Int, positionY: Int, virus: Virus)
     {
-        super.init(positionX: positionX, positionY: positionY, virus: virus, speed: 7, name: "snow", animationSequence: [1, 2, 3, 2], priority: 2)
+        super.init(positionX: positionX, positionY: positionY, virus: virus, speed: 4, name: "snow", animationSequence: [1, 2, 3, 2])
     }
 }
 
@@ -48,7 +48,7 @@ class Slash: Antigen
 {
     init(positionX: Int, positionY: Int, virus: Virus)
     {
-        super.init(positionX: positionX, positionY: positionY, virus: virus, speed: 5, name: "slash", animationSequence: [1, 2, 3, 2], priority: 2)
+        super.init(positionX: positionX, positionY: positionY, virus: virus, speed: 3, name: "slash", animationSequence: [1, 2, 3, 2], priority: 2)
     }
 }
 
@@ -56,6 +56,6 @@ class Zap: Antigen
 {
     init(positionX: Int, positionY: Int, virus: Virus)
     {
-        super.init(positionX: positionX, positionY: positionY, virus: virus, speed: 15, name: "zap", animationSequence: [1, 2, 3, 2])
+        super.init(positionX: positionX, positionY: positionY, virus: virus, speed: 14, name: "zap", animationSequence: [1, 2, 3, 2])
     }
 }

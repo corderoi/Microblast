@@ -76,6 +76,7 @@ class WhiteBloodCell
             }
             
             antibodies.append(newAntibody)
+            field!.game!.delegate!.playerDidShoot(AntibodyType.Special1)
             field?.game?.delegate?.antibodyDidAppear(field!.game!, antibody: newAntibody)
         }
     }
@@ -120,6 +121,8 @@ class WhiteBloodCell
     
     func move(acceleration: Double)
     {
+        var newPositionX: Int
+        
         /* 
         let maxTilt = 0.5
         
@@ -158,7 +161,15 @@ class WhiteBloodCell
             let maxDistance = fieldDimensions.0 / 2
             let centerPoint = fieldDimensions.0 / 2
             
-            positionX = Int(Double(centerPoint) + Double(tilt / maxTilt) * Double(maxDistance) + 0.5)
+            //let moveLimit = 5
+            newPositionX = Int(Double(centerPoint) + Double(tilt / maxTilt) * Double(maxDistance) + 0.5)
+            /*if newPositionX - positionX > moveLimit {
+                newPositionX = positionX + moveLimit
+            } else if positionX - newPositionX > moveLimit {
+                newPositionX = positionX - moveLimit
+            }*/
+            
+            positionX = newPositionX
             
             accelerationArray.removeAtIndex(0)
         }
@@ -166,9 +177,9 @@ class WhiteBloodCell
         //let distance = 0
         
         /*positionX += distance + velocity
-        velocity += distance
-        angle = angle + CGPoint(x: distance, y: 0)
-        angle = angle.normalized()
+        velocity += distance*/
+        angle = angle + CGPoint(x: newPositionX - positionX, y: 0)
+        angle = angle.normalized()/*
         
         // Adjust position for boundary
         if positionX < 0 {
@@ -177,7 +188,7 @@ class WhiteBloodCell
         } else if self.positionX > fieldDimensions.0 {
             positionX = fieldDimensions.0
             velocity = 0
-        }
+        }*/
         
         // Adjust angle for maximum tilt
         if angle.x < -sqrt(2.0) / 2.0 {
@@ -187,7 +198,7 @@ class WhiteBloodCell
         }
         
         // DEBUG
-        //println("Angle is \(angle)")*/
+        //println("Angle is \(angle)")
         
         field?.game.delegate?.playerDidMove(field!.game, player: self)
     }
@@ -212,7 +223,7 @@ class WhiteBloodCell
     {
         // DEBUG
         //println("Pew!")
-        let newAntibody = Antibody(positionX: self.positionX, positionY: self.positionY + Int(PlayerSize.height) / 2, wCell: self, direction: angle)
+        let newAntibody = Antibody(positionX: self.positionX, positionY: self.positionY + Int(PlayerSize.height) / 2, wCell: self/*, direction: angle*/)
         
         // DEBUG
         //println("Shot in direction \(angle)")
@@ -221,7 +232,8 @@ class WhiteBloodCell
         //println("Antibody (\(self.positionX), \(self.positionY))")
         
         antibodies.append(newAntibody)
-        field?.game?.delegate?.antibodyDidAppear(field!.game!, antibody: newAntibody)
+        field!.game!.delegate!.playerDidShoot(AntibodyType.Regular)
+        field!.game!.delegate!.antibodyDidAppear(field!.game!, antibody: newAntibody)
     }
     
     var HP: Int

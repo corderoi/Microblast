@@ -57,6 +57,17 @@ class Game
         }
     }
     
+    func continueLevel()
+    {
+        if score != 0 {
+            score /= 2
+        }
+        delegate?.scoreDidUpdate(self)
+        delegate?.levelDidBegin(self)
+        field.addPlayer()
+        delegate?.playerDidAppear(self, player: field.player!)
+    }
+    
     func addEnergy(energy: Energy)
     {
         if self.energy.count == 4 {

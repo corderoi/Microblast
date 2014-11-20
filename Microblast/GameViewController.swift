@@ -30,11 +30,8 @@ class GameViewController: UIViewController, GameDelegate {
     @IBOutlet weak var previewViewLabel4: UILabel!
     
     @IBOutlet weak var statusBarView: UIView!
-        
     @IBOutlet weak var levelNumberDisplay: UILabel!
-    
     @IBOutlet weak var scoreNumberDisplay: UILabel!
-    
     @IBOutlet weak var specialNameDisplay: UILabel!
     
     var backgroundMusicPlayer: AVAudioPlayer!
@@ -43,15 +40,9 @@ class GameViewController: UIViewController, GameDelegate {
     {
         super.viewDidLoad()
         
-        motionManager.startAccelerometerUpdates()
-        
         createGame()
         
         startTitleScreen()
-        
-        // Start preview scene
-        
-        playBackgroundMusic()
         
         startPreviewScreen()
     }
@@ -79,9 +70,9 @@ class GameViewController: UIViewController, GameDelegate {
         let skView = view as SKView
         
         // DEBUG
-        skView.showsFPS = true
-        skView.showsDrawCount = true
-        skView.showsNodeCount = true
+        skView.showsFPS = false
+        skView.showsDrawCount = false
+        skView.showsNodeCount = false
         
         skView.ignoresSiblingOrder = true
         skView.multipleTouchEnabled = false
@@ -90,6 +81,8 @@ class GameViewController: UIViewController, GameDelegate {
         previewScene.scaleMode = .ResizeFill
         
         previewView.hidden = false
+        
+        playBackgroundMusic()
         
         skView.presentScene(previewScene)
     }
@@ -101,9 +94,9 @@ class GameViewController: UIViewController, GameDelegate {
         let skView = view as SKView
         
         // DEBUG
-        skView.showsFPS = true
-        skView.showsDrawCount = true
-        skView.showsNodeCount = true
+        skView.showsFPS = false
+        skView.showsDrawCount = false
+        skView.showsNodeCount = false
         
         //skView.ignoresSiblingOrder = true
         skView.multipleTouchEnabled = false
@@ -118,6 +111,8 @@ class GameViewController: UIViewController, GameDelegate {
         scene.collisionHappened = game.field.resultOfCollision
         
         startNewCampaign()
+        
+        motionManager.startAccelerometerUpdates()
         
         skView.presentScene(scene, transition: SKTransition.crossFadeWithDuration(0.5))
     }
@@ -180,7 +175,7 @@ class GameViewController: UIViewController, GameDelegate {
                     statusBarView.alpha = 0.3
                     scene.pauseScene()
                     scene.stopTicking()
-                    backgroundMusicPlayer.volume = 0.5
+                    backgroundMusicPlayer.volume = 0.25
                 } else {
                     backgroundMusicPlayer.volume = 1.0
                     scene.unpauseScene()
@@ -202,47 +197,43 @@ class GameViewController: UIViewController, GameDelegate {
     
     override func touchesEnded(touches: NSSet, withEvent event: UIEvent)
     {
-        if !acceptUserInput {
+        if !acceptUserInput || !game.hasStarted {
             return
         }
         
-        if !game.hasStarted {
-            
-        } else {
-            /*let touch = touches.anyObject() as UITouch
-            let touchLocation = touch.locationInNode(scene)*/
-            
-            if touchDown == nil {
-                return
-            }
-            
-            touchDown = nil
-            
-            let myTouchDuration = touchDuration
-            touchDuration = 0
-            game.charge = 0
-            chargeDidUpdate(game)
-            
-            if myTouchDuration >= PowerThreshold {
-                // DEBUG
-                //println("\(myTouchDuration) time passed: power shot!")
-                
-                if let player = game.field.player {
-                    if player.hasSpecial() {
-                        player.trySpecial(/*touchLocation*/)
-                        game.energy = [Energy]()
-                        energyDidUpdate(game)
-                        return
-                    }
-                }
-            }
-            
+        /*let touch = touches.anyObject() as UITouch
+        let touchLocation = touch.locationInNode(scene)*/
+        
+        if touchDown == nil {
+            return
+        }
+        
+        touchDown = nil
+        
+        let myTouchDuration = touchDuration
+        touchDuration = 0
+        game.charge = 0
+        chargeDidUpdate(game)
+        
+        if myTouchDuration >= PowerThreshold {
             // DEBUG
-            //println("Touch location \(touchLocation)")
+            //println("\(myTouchDuration) time passed: power shot!")
             
             if let player = game.field.player {
-                player.tryShoot(/*touchLocation*/)
+                if player.hasSpecial() {
+                    player.trySpecial(/*touchLocation*/)
+                    game.energy = [Energy]()
+                    energyDidUpdate(game)
+                    return
+                }
             }
+        }
+        
+        // DEBUG
+        //println("Touch location \(touchLocation)")
+        
+        if let player = game.field.player {
+            player.tryShoot(/*touchLocation*/)
         }
     }
     
@@ -252,11 +243,7 @@ class GameViewController: UIViewController, GameDelegate {
     
     func didFrameTick()
     {
-        if !acceptUserInput {
-            return
-        }
-        
-        if !game.hasStarted {
+        if !acceptUserInput || !game.hasStarted {
             return
         }
         
@@ -362,10 +349,24 @@ class GameViewController: UIViewController, GameDelegate {
         scene.redrawPlayer(game, player: player)
     }
     
+    func playerDidShoot(type: AntibodyType)
+    {
+        switch type {
+        case AntibodyType.Special1:
+            scene.playSound("special.wav")
+        default:
+            scene.playSound("laser.wav")
+        }
+    }
+    
     func playerDidDie(game: Game)
     {
-        scene.stopSpacedTicks()
-        scene.removePlayer()
+        //scene.stopSpacedTicks()
+        var offset = 0
+        for i in 0 ..< game.field.player!.antibodies.count {
+            scene.removeAntibody(i - offset++)
+        }
+        scene.removePlayer(game.continueLevel)
         game.field.removePlayer()
     }
     
@@ -451,6 +452,11 @@ class GameViewController: UIViewController, GameDelegate {
     func antigenDidDie(whichVirus: Int, whichAntigen: Int)
     {
         scene.removeAntigens(whichVirus, whichAntigen: whichAntigen)
+    }
+    
+    func antigenDidExplode()
+    {
+        scene.playSound("boom.wav")
     }
     
     func playerKilledAllViruses(game: Game)

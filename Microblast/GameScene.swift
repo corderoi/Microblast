@@ -208,9 +208,22 @@ class GameScene : SKScene, SKPhysicsContactDelegate
         //lNode.zRotation = playerNode.zRotation
     }
     
-    func removePlayer()
+    func removePlayer(callback: (() -> ()))
     {
+        let rumbleNode = SKSpriteNode(imageNamed: "rumble-1")
+        rumbleNode.position = wCellNode.position
+        
         wCellNode.removeFromParent()
+        addChild(rumbleNode)
+        playSound("rumble.wav")
+        
+        var textures = [SKTexture]()
+        
+        for i in 1 ... 3 {
+            textures.append(SKTexture(imageNamed: "rumble-\(i)"))
+        }
+        
+        rumbleNode.runAction(SKAction.sequence([SKAction.animateWithTextures(textures, timePerFrame: SpeedConfig[0].virusAnimationSpeed), SKAction.fadeOutWithDuration(0), SKAction.waitForDuration(LevelPauseDuration), SKAction.removeFromParent()]), callback)
     }
     
     func addAntibody(antibody: Antibody) {
@@ -249,7 +262,7 @@ class GameScene : SKScene, SKPhysicsContactDelegate
         let actionMoveDone = SKAction.removeFromParent()
         antibodyNode.runAction(SKAction.sequence([actionMove, actionMoveDone]))*/
         
-        playSound("laser.wav") // todo
+        //playSound("laser.wav") // todo
     }
     
     func redrawAntibodies(game: Game) {
@@ -633,8 +646,8 @@ class GameScene : SKScene, SKPhysicsContactDelegate
             }
             
             var newEnergyNode = SKSpriteNode(imageNamed: "power\(spriteName)")
-            newEnergyNode.position = CGPoint(x: CGFloat(21 + 43 * i), y: size.height - 46)
-            newEnergyNode.size = CGSize(width: 41.0, height: 11.0)
+            newEnergyNode.position = CGPoint(x: CGFloat(18 + 37 * i), y: size.height - 39)
+            newEnergyNode.size = CGSize(width: 35.0, height: 10.0)
             newEnergyNode.runAction(SKAction.repeatActionForever(SKAction.sequence([SKAction.fadeAlphaTo(0.5, duration: 1), SKAction.fadeAlphaTo(1.0, duration: 1)])))
             energyNodes.append(newEnergyNode)
             addChild(newEnergyNode)

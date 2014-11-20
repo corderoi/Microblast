@@ -54,7 +54,6 @@
 		C56E50A91A1C3A34003153C9 /* line.png in Resources */ = {isa = PBXBuildFile; fileRef = C56E50A81A1C3A34003153C9 /* line.png */; };
 		C5C3BC891A14F3AD00B6F417 /* theme.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C5C3BC881A14F3AD00B6F417 /* theme.mp3 */; };
 		C5C3BC8D1A14FB3400B6F417 /* laser.wav in Resources */ = {isa = PBXBuildFile; fileRef = C5C3BC8C1A14FB3400B6F417 /* laser.wav */; };
-		C5C3BC911A150C2900B6F417 /* explosion.wav in Resources */ = {isa = PBXBuildFile; fileRef = C5C3BC901A150C2900B6F417 /* explosion.wav */; };
 		C5E262271A16771A009C3BB5 /* zap-1.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E262241A16771A009C3BB5 /* zap-1.png */; };
 		C5E262281A16771A009C3BB5 /* zap-2.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E262251A16771A009C3BB5 /* zap-2.png */; };
 		C5E262291A16771A009C3BB5 /* zap-3.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E262261A16771A009C3BB5 /* zap-3.png */; };
@@ -124,6 +123,13 @@
 		C5F2EB3C1A1665D60020206F /* vgoldstar-8.png in Resources */ = {isa = PBXBuildFile; fileRef = C5F2EB3B1A1665D60020206F /* vgoldstar-8.png */; };
 		C5F2EB421A166C070020206F /* pin.png in Resources */ = {isa = PBXBuildFile; fileRef = C5F2EB411A166C070020206F /* pin.png */; };
 		C5F2EB461A166E790020206F /* zap.png in Resources */ = {isa = PBXBuildFile; fileRef = C5F2EB451A166E790020206F /* zap.png */; };
+		C5F5A98A1A1D6B1000BCEAA8 /* explosion.wav in Resources */ = {isa = PBXBuildFile; fileRef = C5F5A9891A1D6B1000BCEAA8 /* explosion.wav */; };
+		C5F5A98C1A1D701900BCEAA8 /* theme2.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C5F5A98B1A1D701900BCEAA8 /* theme2.mp3 */; };
+		C5F5A9901A1D87EF00BCEAA8 /* boom.wav in Resources */ = {isa = PBXBuildFile; fileRef = C5F5A98F1A1D87EF00BCEAA8 /* boom.wav */; };
+		C5F5A9921A1D8C7C00BCEAA8 /* rumble.wav in Resources */ = {isa = PBXBuildFile; fileRef = C5F5A9911A1D8C7C00BCEAA8 /* rumble.wav */; };
+		C5F5A9971A1D8D3A00BCEAA8 /* rumble-1.png in Resources */ = {isa = PBXBuildFile; fileRef = C5F5A9941A1D8D3A00BCEAA8 /* rumble-1.png */; };
+		C5F5A9981A1D8D3A00BCEAA8 /* rumble-2.png in Resources */ = {isa = PBXBuildFile; fileRef = C5F5A9951A1D8D3A00BCEAA8 /* rumble-2.png */; };
+		C5F5A9991A1D8D3A00BCEAA8 /* rumble-3.png in Resources */ = {isa = PBXBuildFile; fileRef = C5F5A9961A1D8D3A00BCEAA8 /* rumble-3.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -188,7 +194,6 @@
 		C56E50A81A1C3A34003153C9 /* line.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = line.png; sourceTree = "<group>"; };
 		C5C3BC881A14F3AD00B6F417 /* theme.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = theme.mp3; sourceTree = "<group>"; };
 		C5C3BC8C1A14FB3400B6F417 /* laser.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = laser.wav; sourceTree = "<group>"; };
-		C5C3BC901A150C2900B6F417 /* explosion.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = explosion.wav; sourceTree = "<group>"; };
 		C5E262241A16771A009C3BB5 /* zap-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zap-1.png"; sourceTree = "<group>"; };
 		C5E262251A16771A009C3BB5 /* zap-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zap-2.png"; sourceTree = "<group>"; };
 		C5E262261A16771A009C3BB5 /* zap-3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zap-3.png"; sourceTree = "<group>"; };
@@ -258,6 +263,13 @@
 		C5F2EB3B1A1665D60020206F /* vgoldstar-8.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vgoldstar-8.png"; sourceTree = "<group>"; };
 		C5F2EB411A166C070020206F /* pin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pin.png; sourceTree = "<group>"; };
 		C5F2EB451A166E790020206F /* zap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zap.png; sourceTree = "<group>"; };
+		C5F5A9891A1D6B1000BCEAA8 /* explosion.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = explosion.wav; sourceTree = "<group>"; };
+		C5F5A98B1A1D701900BCEAA8 /* theme2.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = theme2.mp3; sourceTree = "<group>"; };
+		C5F5A98F1A1D87EF00BCEAA8 /* boom.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = boom.wav; sourceTree = "<group>"; };
+		C5F5A9911A1D8C7C00BCEAA8 /* rumble.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = rumble.wav; sourceTree = "<group>"; };
+		C5F5A9941A1D8D3A00BCEAA8 /* rumble-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rumble-1.png"; sourceTree = "<group>"; };
+		C5F5A9951A1D8D3A00BCEAA8 /* rumble-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rumble-2.png"; sourceTree = "<group>"; };
+		C5F5A9961A1D8D3A00BCEAA8 /* rumble-3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rumble-3.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -327,7 +339,12 @@
 		C53892741A13661000E85D76 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C5F5A9911A1D8C7C00BCEAA8 /* rumble.wav */,
+				C5F5A98F1A1D87EF00BCEAA8 /* boom.wav */,
+				C5F5A98B1A1D701900BCEAA8 /* theme2.mp3 */,
+				C5F5A9891A1D6B1000BCEAA8 /* explosion.wav */,
 				C56E50A81A1C3A34003153C9 /* line.png */,
+				C5F5A9931A1D8D2B00BCEAA8 /* rumble */,
 				C5EABBFF1A1C259600F09E10 /* statusbar.png */,
 				C52667C91A1ACEC20030CA8A /* chicken.png */,
 				C52667CA1A1ACEC20030CA8A /* mikewazaski.png */,
@@ -352,7 +369,6 @@
 				C5F2EB281A1664DA0020206F /* vgoldstar */,
 				C5F2EB151A1660CB0020206F /* vgreenstar */,
 				C5C3BCA41A15257B00B6F417 /* explosion */,
-				C5C3BC901A150C2900B6F417 /* explosion.wav */,
 				C5C3BC8C1A14FB3400B6F417 /* laser.wav */,
 				C5C3BC881A14F3AD00B6F417 /* theme.mp3 */,
 				C53892751A13661000E85D76 /* Info.plist */,
@@ -542,6 +558,16 @@
 			name = slash;
 			sourceTree = "<group>";
 		};
+		C5F5A9931A1D8D2B00BCEAA8 /* rumble */ = {
+			isa = PBXGroup;
+			children = (
+				C5F5A9941A1D8D3A00BCEAA8 /* rumble-1.png */,
+				C5F5A9951A1D8D3A00BCEAA8 /* rumble-2.png */,
+				C5F5A9961A1D8D3A00BCEAA8 /* rumble-3.png */,
+			);
+			name = rumble;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -631,6 +657,7 @@
 				C55318F61A175E38004F45A1 /* amoeba-split-5.png in Resources */,
 				C5F2EAC21A1642AD0020206F /* amoeba-2.png in Resources */,
 				C5F2EB421A166C070020206F /* pin.png in Resources */,
+				C5F5A9991A1D8D3A00BCEAA8 /* rumble-3.png in Resources */,
 				C5F2EB0D1A1657AE0020206F /* vbluestar-2.png in Resources */,
 				C5EABC001A1C259600F09E10 /* statusbar.png in Resources */,
 				C52667CE1A1ACEC20030CA8A /* theabyss.png in Resources */,
@@ -653,6 +680,7 @@
 				C52667CC1A1ACEC20030CA8A /* chicken.png in Resources */,
 				C5F2EAF91A1657170020206F /* vredstar-1.png in Resources */,
 				C5F2EAC41A1642AD0020206F /* amoeba-4.png in Resources */,
+				C5F5A98A1A1D6B1000BCEAA8 /* explosion.wav in Resources */,
 				C5F2EB201A1660D70020206F /* vgreenstar-2.png in Resources */,
 				C5F2EB0E1A1657AE0020206F /* vbluestar-3.png in Resources */,
 				C5F2EAB71A1631BE0020206F /* wcell.png in Resources */,
@@ -680,6 +708,7 @@
 				C5F2EA6D1A155A480020206F /* explosion-3.png in Resources */,
 				C5F2EAC81A1642AD0020206F /* amoeba-8.png in Resources */,
 				C55319041A18C9E9004F45A1 /* levelpreview.png in Resources */,
+				C5F5A9921A1D8C7C00BCEAA8 /* rumble.wav in Resources */,
 				C5F2EB3A1A1664ED0020206F /* vgoldstar.png in Resources */,
 				C5F2EB111A1657AE0020206F /* vbluestar-6.png in Resources */,
 				C5F2EB361A1664ED0020206F /* vgoldstar-5.png in Resources */,
@@ -693,9 +722,9 @@
 				C55319111A18D296004F45A1 /* vredstar-silhouette-1.png in Resources */,
 				C5F2EAC61A1642AD0020206F /* amoeba-6.png in Resources */,
 				C5F2EAFC1A1657170020206F /* vredstar-4.png in Resources */,
-				C5C3BC911A150C2900B6F417 /* explosion.wav in Resources */,
 				C5F2EB341A1664ED0020206F /* vgoldstar-3.png in Resources */,
 				C5F2EB121A1657AE0020206F /* vbluestar-7.png in Resources */,
+				C5F5A98C1A1D701900BCEAA8 /* theme2.mp3 in Resources */,
 				C55319121A18D296004F45A1 /* vredstar-silhouette-2.png in Resources */,
 				C55319161A18D296004F45A1 /* vredstar-silhouette-6.png in Resources */,
 				C5F2EB131A1657AE0020206F /* vbluestar-8.png in Resources */,
@@ -705,6 +734,7 @@
 				C55318F41A175E38004F45A1 /* amoeba-split-3.png in Resources */,
 				C5F2EB1F1A1660D70020206F /* vgreenstar-1.png in Resources */,
 				C5C3BC8D1A14FB3400B6F417 /* laser.wav in Resources */,
+				C5F5A9971A1D8D3A00BCEAA8 /* rumble-1.png in Resources */,
 				C55318F21A175E38004F45A1 /* amoeba-split-1.png in Resources */,
 				C55318F31A175E38004F45A1 /* amoeba-split-2.png in Resources */,
 				C5F2EB0F1A1657AE0020206F /* vbluestar-4.png in Resources */,
@@ -713,6 +743,7 @@
 				C52667C81A1ACEB10030CA8A /* meh.png in Resources */,
 				C55319191A18D296004F45A1 /* vredstar-silhouette.png in Resources */,
 				C5E2622F1A16C8EB009C3BB5 /* slash-2.png in Resources */,
+				C5F5A9981A1D8D3A00BCEAA8 /* rumble-2.png in Resources */,
 				C5F2EB321A1664ED0020206F /* vgoldstar-1.png in Resources */,
 				C56E50A91A1C3A34003153C9 /* line.png in Resources */,
 				C5F2EAFB1A1657170020206F /* vredstar-3.png in Resources */,
@@ -721,6 +752,7 @@
 				C5E262381A16CBA4009C3BB5 /* snow-2.png in Resources */,
 				C5F2EB381A1664ED0020206F /* vgoldstar-7.png in Resources */,
 				C5F2EB001A1657170020206F /* vredstar-8.png in Resources */,
+				C5F5A9901A1D87EF00BCEAA8 /* boom.wav in Resources */,
 				C5F2EAC31A1642AD0020206F /* amoeba-3.png in Resources */,
 				C5F2EAFE1A1657170020206F /* vredstar-6.png in Resources */,
 			);

@@ -21,6 +21,8 @@ protocol GameDelegate {
     
     func antibodiesDidMove(game: Game)
     
+    func playerDidShoot(type: AntibodyType)
+    
     func antibodyDidDie(whichAntibody: Int)
     
     func virusDidAppear(game: Game, virus: Virus, afterTransition: (() -> ()))
@@ -38,6 +40,8 @@ protocol GameDelegate {
     func antigenDidAppear(virus: Virus, antigen: Antigen)
     
     func antigensDidMove(game: Game)
+    
+    func antigenDidExplode()
     
     func antigenDidDie(whichVirus: Int, whichAntigen: Int)
     

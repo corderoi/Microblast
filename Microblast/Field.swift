@@ -202,6 +202,7 @@ class Field
                     // Antigen out of screen
                     if antigen.positionX < 0 + InnerMargin || antigen.positionY < 0 || antigen.positionY > fieldDimensions.1 {
                         antigenHitList.append(i)
+                        game.delegate?.antigenDidExplode()
                     }
                     // Antigen hit player
                     if absolute(antigen.positionX - player.positionX) < Int(PlayerSize.width) / 2 && absolute(antigen.positionY - player.positionY) < Int(PlayerSize.height) / 2 {
