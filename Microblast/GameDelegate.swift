@@ -8,9 +8,13 @@
 
 import Foundation
 
+//
 // GameDelegate
-
-protocol GameDelegate {
+// Controls communication between the Game view (GameScene and 
+// GameViewController) and the game data.
+//
+protocol GameDelegate
+{
     func playerDidAppear(game: Game, player: WhiteBloodCell)
     
     func playerDidMove(game: Game, player: WhiteBloodCell)
@@ -45,7 +49,7 @@ protocol GameDelegate {
     
     func antigenDidDie(whichVirus: Int, whichAntigen: Int)
     
-    func playerKilledAllViruses(game: Game)
+    func playerDidKillAllViruses(game: Game)
     
     func levelDidEnd(game: Game, transition: (() -> ()))
     

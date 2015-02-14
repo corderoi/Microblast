@@ -11,17 +11,19 @@ import SpriteKit
 
 // Auxiliary /////////////////////////////////////////////////////////////////
 
+//
 // random()
 // Return a random number from 0 to number-1, inclusive.
-
+//
 func random(number: Int) -> Int
 {
     return Int(arc4random_uniform(UInt32(number)))
 }
 
+//
 // absolute()
 // Returns positive magnitude for signed integers
-
+//
 func absolute(number: Int) -> Int
 {
     return number < 0 ? -number : number
@@ -32,11 +34,12 @@ func renderCoordinates(x: Int, y: Int, deviceWidth: Int = 375, deviceHeight: Int
     return (x * deviceWidth / 900, y * deviceHeight / 1600)
 }
 
+//
 // pointForLayout()
 // Convert an object's array-style JI ([J][I]) coordinates, which are relative
-// to the objects themselves, to the (X, Y) coordinate system of a rendering
+// to the objects themselves, to the (X, Y) coordinate system of the rendering
 // map.
-
+//
 func pointForLayout(JI: Int) -> CGPoint
 {
     let renderWidth = fieldDimensions.0
@@ -54,16 +57,15 @@ func pointForLayout(JI: Int) -> CGPoint
     let x = startingX + spacingX * I
     let y = startingY - spacingY * J
     
-    // DEBUG
-    //println("Point \(JI) to (\(x), \(y))")
-    
     return CGPointMake(CGFloat(x), CGFloat(y))
 }
 
 func intArrayContains(item: Int, array: [Int]) -> Bool
 {
-    for i in 0 ..< array.count {
-        if item == array[i] {
+    for i in 0 ..< array.count
+    {
+        if item == array[i]
+        {
             return true
         }
     }
@@ -75,8 +77,11 @@ func configureAnimationLoop(node: SKSpriteNode, scheme: [Int], name: String, int
 {
     var textures: [SKTexture]!
     textures = [SKTexture]()
-    for i in scheme {
+    
+    for i in scheme
+    {
         textures.append(SKTexture(imageNamed: "\(name)-\(i)"))
     }
+    
     node.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(textures, timePerFrame: interval)))
 }

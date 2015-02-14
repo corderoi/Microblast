@@ -24,17 +24,14 @@ class Antibody
     
     func die()
     {
-        // DEBUG
-        //println("Antibody self-destructing")
-        //wCell?.antibodies = [Antibody]()
     }
     
     var positionX: Int
     var positionY: Int
-    var wCell: WhiteBloodCell?
     var direction: CGPoint
     var speed: Int
     var priority: Int
+    var wCell: WhiteBloodCell?
 }
 
 class Piercing: Antibody
@@ -54,7 +51,8 @@ class HorizontalLeft: Antibody
     
     override func die()
     {
-        if let whiteBloodCell = wCell {
+        if let whiteBloodCell = wCell
+        {
             let newAntibody = Piercing(positionX: positionX, positionY: positionY, wCell: whiteBloodCell, direction: CGPoint(x: -1, y: 0))
             whiteBloodCell.antibodies.append(newAntibody)
             
@@ -72,7 +70,8 @@ class HorizontalRight: Antibody
     
     override func die()
     {
-        if let whiteBloodCell = wCell {
+        if let whiteBloodCell = wCell
+        {
             let newAntibody = Piercing(positionX: positionX, positionY: positionY, wCell: whiteBloodCell, direction: CGPoint(x: 1, y: 0))
             whiteBloodCell.antibodies.append(newAntibody)
             
@@ -90,7 +89,8 @@ class DiagonalShot: Antibody
     
     override func die()
     {
-        if let whiteBloodCell = wCell {
+        if let whiteBloodCell = wCell
+        {
             let newAntibodyLeft = DiagonalSplit(positionX: positionX, positionY: positionY, wCell: whiteBloodCell, direction: CGPoint(x: -1, y: 1))
             whiteBloodCell.antibodies.append(newAntibodyLeft)
             

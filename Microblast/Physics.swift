@@ -10,7 +10,8 @@ import AVFoundation
 
 // Physics ///////////////////////////////////////////////////////////////////
 
-struct PhysicsCategory {
+struct PhysicsCategory
+{
     static let None       : UInt32 = 0
     static let Virus      : UInt32 = 1
     static let Antibody   : UInt32 = 1 << 1 // 0b10
@@ -27,11 +28,13 @@ struct PhysicsCategory {
 
 // Vector math ///////////////////////////////////////////////////////////////
 
-func +(left: CGPoint, right: CGPoint) -> CGPoint {
+func +(left: CGPoint, right: CGPoint) -> CGPoint
+{
     return CGPoint(x: left.x + right.x, y: left.y + right.y)
 }
 
-func -(left: CGPoint, right: CGPoint) -> CGPoint {
+func -(left: CGPoint, right: CGPoint) -> CGPoint
+{
     return CGPoint(x: left.x - right.x, y: left.y - right.y)
 }
 
@@ -46,12 +49,14 @@ func /(point: CGPoint, scalar: CGFloat) -> CGPoint
 }
 
 #if !(arch(x86_64) || arch(arm64))
-func sqrt(a: CGFloat) -> CGFloat {
+func sqrt(a: CGFloat) -> CGFloat
+{
     return CGFloat(sqrtf(Float(a)))
 }
 #endif
 
-extension CGPoint {
+extension CGPoint
+{
     func length() -> CGFloat {
         return sqrt(x*x + y*y)
     }

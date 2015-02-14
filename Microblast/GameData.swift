@@ -30,7 +30,8 @@ func getLetter(whichLetter: Int, string: String) -> Character?
 {
     var count = 0
     for letter in string {
-        if count == whichLetter {
+        if count == whichLetter
+        {
             return letter
         }
         count++
@@ -155,10 +156,11 @@ enum AntibodyType
 
 enum Energy: Printable
 {
-    case RedEnergy, BlueEnergy, GreenEnergy, GoldEnergy, BlackEnergy
+    case RedEnergy, BlueEnergy, GreenEnergy, GoldEnergy, SilverEnergy, BlackEnergy
     
     var description: String {
-        switch self {
+        switch self
+        {
         case .RedEnergy:
             return "RedEnergy"
         case .BlueEnergy:
@@ -167,6 +169,8 @@ enum Energy: Printable
             return "GreenEnergy"
         case .GoldEnergy:
             return "GoldEnergy"
+        case .SilverEnergy:
+            return "SilverEnergy"
         case .BlackEnergy:
             return "BlackEnergy"
         }
@@ -174,3 +178,4 @@ enum Energy: Printable
 }
 
 let PauseButtonSize = CGSize(width: 50.0, height: 35.0)
+

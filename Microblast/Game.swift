@@ -38,30 +38,36 @@ class Game
     
     func checkIfLevelIsOver()
     {
-        if (field.viruses.count == 0 && field.antigens.count == 0) {
+        if (field.viruses.count == 0 && field.antigens.count == 0)
+        {
             delegate?.levelDidEnd(self, transition: goToNextLevel)
         }
     }
     
     func goToNextLevel()
     {
-        if (++level < numLevels) {
+        if (++level < numLevels)
+        {
             stage = 0
             score += LevelClearScore
             delegate?.scoreDidUpdate(self)
             delegate?.levelDidUpdate(self)
             field.addViruses()
             delegate?.levelDidBegin(self)
-        } else {
+        }
+        else
+        {
             delegate?.gameDidEnd()
         }
     }
     
     func continueLevel()
     {
-        if score != 0 {
+        if score != 0
+        {
             score /= 2
         }
+        
         delegate?.scoreDidUpdate(self)
         delegate?.levelDidBegin(self)
         field.addPlayer()
@@ -70,30 +76,46 @@ class Game
     
     func addEnergy(energy: Energy)
     {
-        if self.energy.count == 4 {
+        if self.energy.count == 4
+        {
             return
-        } else if self.energy.count > 0 {
-            for storedEnergy in self.energy {
-                if storedEnergy != energy {
+        }
+        else if self.energy.count > 0
+        {
+            for storedEnergy in self.energy
+            {
+                if storedEnergy != energy
+                {
                     self.energy = [Energy]()
                     break
                 }
             }
         }
+        
         self.energy.append(energy)
         delegate?.energyDidUpdate(self)
-        
-        // DEBUG
-        //println("Got \(energy) -> \(self.energy)")
     }
     
+    // Game is in progress
     var hasStarted: Bool
+    
+    // Level of game
     var level: Int
+    
+    // Player's score
     var score: Int
+    
+    // Energy gathered by player -- max 4
     var energy: [Energy]
+    
+    // Stage of 5 in each level, depends on number of viruses remaining
     var stage: Int
+    
+    // Represents the playing field
     var field: Field!
+    
+    // Responder for controlling the scene to draw on screen
     var delegate: GameDelegate?
-    var special: Bool = false
+    
     var charge: Int
 }

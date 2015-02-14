@@ -27,44 +27,22 @@ class WhiteBloodCell
     
     func tryShoot()
     {
-        if antibodies.count < maxAntibodies {
+        if antibodies.count < maxAntibodies
+        {
             shoot()
         }
     }
     
-    /*func trySpecial(aimTowards: CGPoint)
-    {
-        if let energyType = specialType() {
-            var newAntibody: Antibody
-            
-            let renderSelfVector = renderCoordinates(self.positionX, self.positionY)
-            let selfDirectionVector = CGPoint(x: renderSelfVector.0, y: renderSelfVector.1)
-            let direction = aimTowards - selfDirectionVector
-            
-            switch energyType {
-            case .BlueEnergy:
-                newAntibody = HorizontalLeft(positionX: self.positionX, positionY: self.positionY + Int(PlayerSize.height) / 2, wCell: self, direction: direction.normalized())
-            case .GreenEnergy:
-                newAntibody = HorizontalRight(positionX: self.positionX, positionY: self.positionY + Int(PlayerSize.height) / 2, wCell: self, direction: direction.normalized())
-            case .GoldEnergy:
-                newAntibody = DiagonalShot(positionX: self.positionX, positionY: self.positionY + Int(PlayerSize.height) / 2, wCell: self, direction: direction.normalized())
-            default:
-                newAntibody = Piercing(positionX: self.positionX, positionY: self.positionY + Int(PlayerSize.height) / 2, wCell: self, direction: direction.normalized())
-            }
-            
-            antibodies.append(newAntibody)
-            field?.game?.delegate?.antibodyDidAppear(field!.game!, antibody: newAntibody)
-        }
-    }*/
-    
     func trySpecial()
     {
-        if let energyType = specialType() {
+        if let energyType = specialType()
+        {
             var newAntibody: Antibody
             
             let direction = angle
             
-            switch energyType {
+            switch energyType
+            {
             case .BlueEnergy:
                 newAntibody = HorizontalLeft(positionX: self.positionX, positionY: self.positionY + Int(PlayerSize.height) / 2, wCell: self, direction: direction.normalized())
             case .GreenEnergy:
@@ -83,25 +61,32 @@ class WhiteBloodCell
     
     func hasSpecial() -> Bool
     {
-        if field?.game.energy.count == 4 {
+        if field?.game.energy.count == 4
+        {
             return true
-        } else {
+        }
+        else
+        {
             return false
         }
     }
     
     func specialType() -> Energy?
     {
-        if field?.game.energy.count > 0 {
+        if field?.game.energy.count > 0
+        {
             return field?.game.energy[0]
-        } else {
+        }
+        else
+        {
             return nil
         }
     }
     
     func wasHit()
     {
-        if --HP == 0 {
+        if --HP == 0
+        {
             field!.game.delegate!.playerDidDie(field!.game)
         }
     }
@@ -111,125 +96,68 @@ class WhiteBloodCell
         return HP == 0
     }
     
-    // DEBUG
-    /*func tryShoot(aimTowards: CGPoint)
-    {
-        if antibodies.count < maxAntibodies {
-            shoot(aimTowards)
-        }
-    }*/
-    
     func move(acceleration: Double)
     {
         var newPositionX: Int
         
-        /* 
-        let maxTilt = 0.5
-        
-        var tilt = data.acceleration.x
-        if tilt > maxTilt {
-        tilt = maxTilt
-        } else if tilt < -maxTilt {
-        tilt = -maxTilt
-        }
-        
-        let maxDistance = fieldDimensions.0 / 2
-        let centerPoint = fieldDimensions.0 / 2
-        player.positionX = Int(Double(centerPoint) + Double(tilt / maxTilt) * Double(maxDistance))
-        player.move(0)
-        */
-        
         accelerationArray.append(acceleration)
         
-        if accelerationArray.count < NumberOfAccelerationSamples {
+        if accelerationArray.count < NumberOfAccelerationSamples
+        {
             return
-        } else {
+        }
+        else
+        {
             var averageAcceleration = 0.0
-            for value in accelerationArray {
+            
+            for value in accelerationArray
+            {
                 averageAcceleration += value
             }
+            
             averageAcceleration /= Double(NumberOfAccelerationSamples)
             
             let maxTilt = 0.4
             var tilt = averageAcceleration
-            if tilt > maxTilt {
+            
+            if tilt > maxTilt
+            {
                 tilt = maxTilt
-            } else if tilt < -maxTilt {
+            }
+            else if tilt < -maxTilt
+            {
                 tilt = -maxTilt
             }
             
             let maxDistance = fieldDimensions.0 / 2
             let centerPoint = fieldDimensions.0 / 2
             
-            //let moveLimit = 5
             newPositionX = Int(Double(centerPoint) + Double(tilt / maxTilt) * Double(maxDistance) + 0.5)
-            /*if newPositionX - positionX > moveLimit {
-                newPositionX = positionX + moveLimit
-            } else if positionX - newPositionX > moveLimit {
-                newPositionX = positionX - moveLimit
-            }*/
             
             positionX = newPositionX
             
             accelerationArray.removeAtIndex(0)
         }
         
-        //let distance = 0
-        
-        /*positionX += distance + velocity
-        velocity += distance*/
         angle = angle + CGPoint(x: newPositionX - positionX, y: 0)
-        angle = angle.normalized()/*
-        
-        // Adjust position for boundary
-        if positionX < 0 {
-            positionX = 0
-            velocity = 0
-        } else if self.positionX > fieldDimensions.0 {
-            positionX = fieldDimensions.0
-            velocity = 0
-        }*/
+        angle = angle.normalized()
         
         // Adjust angle for maximum tilt
-        if angle.x < -sqrt(2.0) / 2.0 {
+        if angle.x < -sqrt(2.0) / 2.0
+        {
             angle = CGPointMake(-1, 1).normalized()
-        } else if angle.x > sqrt(2.0) / 2.0 {
+        }
+        else if angle.x > sqrt(2.0) / 2.0
+        {
             angle = CGPointMake(1, 1).normalized()
         }
-        
-        // DEBUG
-        //println("Angle is \(angle)")
         
         field?.game.delegate?.playerDidMove(field!.game, player: self)
     }
     
-    // DEBUG
-    /*func shoot(aimTowards: CGPoint)
-    {
-        // DEBUG
-        //println("Aim towards \(aimTowards)")
-        
-        let renderSelfVector = renderCoordinates(self.positionX, self.positionY)
-        let selfDirectionVector = CGPoint(x: renderSelfVector.0, y: renderSelfVector.1)
-        let direction = aimTowards - selfDirectionVector
-        
-        let newAntibody = Antibody(positionX: self.positionX, positionY: self.positionY + Int(PlayerSize.height) / 2, wCell: self, direction: direction.normalized())
-        
-        antibodies.append(newAntibody)
-        field?.game?.delegate?.antibodyDidAppear(field!.game!, antibody: newAntibody)
-    }*/
-    
     func shoot()
     {
-        // DEBUG
-        //println("Pew!")
-        let newAntibody = Antibody(positionX: self.positionX, positionY: self.positionY + Int(PlayerSize.height) / 2, wCell: self/*, direction: angle*/)
-        
-        // DEBUG
-        //println("Shot in direction \(angle)")
-        
-        // DEBUG
-        //println("Antibody (\(self.positionX), \(self.positionY))")
+        let newAntibody = Antibody(positionX: self.positionX, positionY: self.positionY + Int(PlayerSize.height) / 2, wCell: self)
         
         antibodies.append(newAntibody)
         field!.game!.delegate!.playerDidShoot(AntibodyType.Regular)
